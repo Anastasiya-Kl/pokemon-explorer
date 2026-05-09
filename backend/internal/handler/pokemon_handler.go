@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"errors"
 	"strings"
 
+	"github.com/Anastasiya-Kl/pokemon-explorer/internal/client"
 	"github.com/Anastasiya-Kl/pokemon-explorer/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
@@ -57,7 +59,7 @@ func (h *PokemonHandler) GetPokemonByName(c *fiber.Ctx) error {
 
 	pokemon, err := h.service.GetPokemonDetail(c.Context(), name)
 	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
+		if errors.Is(err, client.ErrPokemonNotFound) {
 			return c.Status(fiber.StatusNotFound).JSON(errorResponse{Error: "pokemon not found"})
 		}
 

@@ -26,14 +26,14 @@ export function ErrorState({
 
 			<div className="flex gap-3">
 				<button
-					className="rounded-md border border-slate-300 px-3 py-2 font-medium text-sm"
+					className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 font-medium text-sm transition hover:border-slate-400 hover:bg-slate-50 hover:text-slate-950"
 					onClick={() => reset()}
 					type="button"
 				>
 					Try again
 				</button>
 				<Link
-					className="rounded-md border border-slate-300 px-3 py-2 font-medium text-sm"
+					className="rounded-md border border-slate-300 px-3 py-2 font-medium text-sm transition hover:border-slate-400 hover:bg-slate-50 hover:text-slate-950"
 					href={homeHref}
 				>
 					{homeLabel}

@@ -3,6 +3,7 @@ package cache
 import (
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Anastasiya-Kl/pokemon-explorer/internal/model"
 )
@@ -12,6 +13,9 @@ type PokemonCache struct {
 	details     map[string]*model.PokemonDetail
 	index       []model.PokeAPIResourceName
 	indexLoaded bool
+
+	strongest          []model.PokemonStrongestItem
+	strongestExpiresAt time.Time
 }
 
 func NewPokemonCache() *PokemonCache {
@@ -64,6 +68,25 @@ func (c *PokemonCache) SetIndex(index []model.PokeAPIResourceName) {
 	c.indexLoaded = true
 }
 
+func (c *PokemonCache) GetStrongest(now time.Time) ([]model.PokemonStrongestItem, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	if len(c.strongest) == 0 || !now.Before(c.strongestExpiresAt) {
+		return nil, false
+	}
+
+	return copyStrongest(c.strongest), true
+}
+
+func (c *PokemonCache) SetStrongest(items []model.PokemonStrongestItem, ttl time.Duration, now time.Time) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.strongest = copyStrongest(items)
+	c.strongestExpiresAt = now.Add(ttl)
+}
+
 func normalizeKey(name string) string {
 	return strings.ToLower(strings.TrimSpace(name))
 }
@@ -71,6 +94,13 @@ func normalizeKey(name string) string {
 func copyIndex(index []model.PokeAPIResourceName) []model.PokeAPIResourceName {
 	copied := make([]model.PokeAPIResourceName, len(index))
 	copy(copied, index)
+
+	return copied
+}
+
+func copyStrongest(items []model.PokemonStrongestItem) []model.PokemonStrongestItem {
+	copied := make([]model.PokemonStrongestItem, len(items))
+	copy(copied, items)
 
 	return copied
 }

@@ -33,9 +33,23 @@ The backend uses a simple in-memory cache protected by `sync.RWMutex` for:
 
 - Pokémon index list used for search and pagination
 
+- computed `/pokemon/strongest` result with a short TTL
+
+The cache is intentionally in-memory only and is lost when the backend restarts.
+
 ## Strongest Pokémon
 
 `GET /pokemon/strongest` fetches Pokémon details with bounded concurrency using `errgroup.SetLimit`, ranks by total base stats, and uses Pokémon ID as a deterministic tie-breaker.
+
+The computed top result is cached with a short TTL to avoid recomputing the ranking on every request.
+
+## Tests
+
+Run backend tests:
+
+```bash
+go test ./...
+```
 
 ## Docker
 

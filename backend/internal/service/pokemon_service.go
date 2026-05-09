@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Anastasiya-Kl/pokemon-explorer/internal/cache"
 	"github.com/Anastasiya-Kl/pokemon-explorer/internal/client"
@@ -19,6 +19,7 @@ const (
 	maxPageSize               = 50
 	strongestLimit            = 10
 	strongestConcurrencyLimit = 15
+	strongestCacheTTL         = 10 * time.Minute
 )
 
 type PokemonService struct {
@@ -109,6 +110,11 @@ func (s *PokemonService) ListPokemon(ctx context.Context, page int, pageSize int
 }
 
 func (s *PokemonService) GetStrongestPokemon(ctx context.Context) ([]model.PokemonStrongestItem, error) {
+	now := time.Now()
+	if strongest, ok := s.pokemonCache.GetStrongest(now); ok {
+		return strongest, nil
+	}
+
 	index, err := s.getPokemonIndex(ctx)
 	if err != nil {
 		return nil, err
@@ -156,19 +162,10 @@ func (s *PokemonService) GetStrongestPokemon(ctx context.Context) ([]model.Pokem
 		return nil, fmt.Errorf("no pokemon results collected")
 	}
 
-	sort.Slice(results, func(i, j int) bool {
-		if results[i].StatTotal == results[j].StatTotal {
-			return results[i].ID < results[j].ID
-		}
+	strongest := rankStrongestPokemon(results, strongestLimit)
+	s.pokemonCache.SetStrongest(strongest, strongestCacheTTL, time.Now())
 
-		return results[i].StatTotal > results[j].StatTotal
-	})
-
-	if len(results) > strongestLimit {
-		results = results[:strongestLimit]
-	}
-
-	return results, nil
+	return strongest, nil
 }
 
 func (s *PokemonService) getPokemonIndex(ctx context.Context) ([]model.PokeAPIResourceName, error) {

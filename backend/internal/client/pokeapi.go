@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/Anastasiya-Kl/pokemon-explorer/internal/model"
 )
+
+var ErrPokemonNotFound = errors.New("pokemon not found")
 
 type PokeAPIClient struct {
 	baseURL    string
@@ -71,7 +74,7 @@ func (c *PokeAPIClient) GetPokemonDetail(ctx context.Context, name string) (*mod
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("pokemon not found: %s", normalizedName)
+		return nil, ErrPokemonNotFound
 	}
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {

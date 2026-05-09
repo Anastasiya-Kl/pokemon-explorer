@@ -18,6 +18,8 @@ The frontend calls the Go backend only through server-side tRPC procedures. Brow
 | --- | --- |
 | `BACKEND_URL` | `http://localhost:8080` |
 
+`BACKEND_URL` is used only by the server-side tRPC layer and should not be prefixed with `NEXT_PUBLIC_`.
+
 ## Run Locally
 
 Start the backend first on `http://localhost:8080`.
@@ -32,7 +34,7 @@ cp .env.example .env
 npm install
 npm run dev
 ```
-The frontend runs on `http://localhost:3000`
+The frontend runs on `http://localhost:3000`.
 
 ## Useful Commands
 

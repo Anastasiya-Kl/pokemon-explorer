@@ -55,9 +55,12 @@ export function Pagination({
 			<span className="flex items-center gap-2 text-slate-600 text-sm">
 				Page
 				<input
+					aria-label="Page number"
 					className="w-14 rounded-md border border-slate-300 px-2 py-1 text-center text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
 					disabled={isLoading}
+					id="page"
 					inputMode="numeric"
+					name="page"
 					onBlur={commitPageInput}
 					onChange={(event) => setPageInput(event.target.value)}
 					onKeyDown={(event) => {

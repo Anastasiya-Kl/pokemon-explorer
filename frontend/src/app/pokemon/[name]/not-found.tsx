@@ -11,7 +11,7 @@ export default function PokemonDetailNotFoundPage() {
 			</div>
 
 			<Link
-				className="w-fit rounded-md border border-slate-300 px-3 py-2 font-medium text-sm"
+				className="w-fit rounded-md border border-slate-300 px-3 py-2 font-medium text-sm transition hover:border-slate-400 hover:bg-slate-50 hover:text-slate-950"
 				href="/"
 			>
 				Home
